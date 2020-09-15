@@ -161,6 +161,89 @@ func buildOrderBy(queryMap map[string]interface{}, column string) string {
 	return query.String()
 }
 
+func GenerateOrderBySql(orderBySlice []parser.OrderItem) string {
+
+	var query strings.Builder
+
+	for id, item := range orderBySlice {
+		fmt.Fprintf(&query, "%s", item.Field)
+		if item.Order == "desc" {
+			query.WriteString(" DESC ")
+		}
+
+		if len(orderBySlice) > id+1 {
+			query.WriteString(",")
+		}
+	}
+	return query.String()
+}
+
+func GenerateFilterBySql(node *parser.ParseNode) (string, error) {
+
+	if len(node.Children) != 2 {
+		return "", ErrInvalidInput
+	}
+
+	var filter strings.Builder
+
+	operator := node.Token.Value.(string)
+	sqlOp := sqlOperators[operator]
+	if operator == "" || sqlOp == "" {
+		// invalid or unknown operator
+		return "", ErrInvalidInput
+	}
+
+	switch operator {
+
+	case "eq", "ne", "gt", "ge", "lt", "le":
+
+		if _, keyOk := node.Children[0].Token.Value.(string); !keyOk {
+			return "", ErrInvalidInput
+		}
+
+		left := node.Children[0].Token.Value.(string)
+
+		if value, valueOk := node.Children[1].Token.Value.(string); valueOk {
+			node.Children[1].Token.Value = escapeQuote(value)
+		}
+
+		right := pq.QuoteLiteral(fmt.Sprintf("%v", node.Children[1].Token.Value))
+
+		fmt.Fprintf(&filter, "%s %s %s", left, sqlOp, right)
+
+	case "or", "and":
+
+		leftFilter, err := GenerateFilterBySql(node.Children[0]) // Left children
+		if err != nil {
+			return "", err
+		}
+		rightFilter, err := GenerateFilterBySql(node.Children[1]) // Right children
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&filter, "%s %s %s", leftFilter, operator, rightFilter)
+
+	//Functions
+	case "contains", "endswith", "startswith":
+		if _, ok := node.Children[1].Token.Value.(string); !ok {
+			return "", ErrInvalidInput
+		}
+		// Remove single quote
+		value, valueOk := node.Children[1].Token.Value.(string)
+		if !valueOk {
+			return "", ErrInvalidInput
+		}
+		node.Children[1].Token.Value = escapeQuote(value)
+
+		left := node.Children[0].Token.Value.(string)
+		right := pq.QuoteLiteral(fmt.Sprintf(sqlOp, node.Children[1].Token.Value.(string)))
+
+		fmt.Fprintf(&filter, "%s LIKE %s", left, right)
+	}
+
+	return filter.String(), nil
+}
+
 func applyFilter(node *parser.ParseNode, column string) (string, error) {
 
 	if len(node.Children) != 2 {

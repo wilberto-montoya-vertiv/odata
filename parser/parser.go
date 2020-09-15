@@ -60,14 +60,14 @@ func ParseURLValues(query url.Values) (map[string]interface{}, error) {
 		case Count:
 			parseResult = true
 		case OrderBy:
-			parseResult, err = parseOrderArray(&value)
+			parseResult, err = ParseOrderArray(&value)
 		case InlineCount:
 			if !isValidInlineCountValue(value) {
 				parseErrors = append(parseErrors, "Inline count value needs to be allpages or none")
 			}
 			parseResult = value
 		case Filter:
-			parseResult, err = parseFilterString(value)
+			parseResult, err = ParseFilterString(value)
 		default:
 			parseErrors = append(parseErrors, "Keyword '"+queryParam+"' is not valid")
 		}

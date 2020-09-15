@@ -21,7 +21,7 @@ const (
 	filterTokenTime
 	filterTokenDateTime
 	filterTokenBoolean
-	filterTokenLiteral
+	FilterTokenLiteral
 )
 
 // GlobalFilterTokenizer the global filter tokenizer
@@ -32,7 +32,7 @@ var globalFilterParser = filterParser()
 
 // ParseFilterString Converts an input string from the $filter part of the URL into a parse
 // tree that can be used by providers to create a response.
-func parseFilterString(filter string) (*ParseNode, error) {
+func ParseFilterString(filter string) (*ParseNode, error) {
 	tokens, err := globalFilterTokenizer.tokenize(filter)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func filterTokenizer() *Tokenizer {
 	t.add("^-?[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}", filterTokenDate)
 	t.add("^[0-9]{2,2}:[0-9]{2,2}(:[0-9]{2,2}(.[0-9]+)?)?", filterTokenTime)
 	t.add("^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}T[0-9]{2,2}:[0-9]{2,2}(:[0-9]{2,2}(.[0-9]+)?)?(Z|[+-][0-9]{2,2}:[0-9]{2,2})", filterTokenDateTime)
-	t.add("^[a-zA-Z][a-zA-Z0-9_.]*", filterTokenLiteral)
-	t.add("^_id", filterTokenLiteral)
+	t.add("^[a-zA-Z][a-zA-Z0-9_.]*", FilterTokenLiteral)
+	t.add("^_id", FilterTokenLiteral)
 	t.ignore("^ ", filterTokenWhitespace)
 
 	return &t

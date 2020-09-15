@@ -96,7 +96,7 @@ func convertValue(token []byte, tokenType int) (interface{}, error) {
 		return strconv.ParseBool(string(token))
 	case filterTokenFloat:
 		return strconv.ParseFloat(string(token), 10)
-	case filterTokenLiteral, filterTokenString:
+	case FilterTokenLiteral, filterTokenString:
 		return strings.TrimSpace(string(token)), nil
 	case filterTokenDateTime, filterTokenDate, filterTokenTime:
 		return time.Parse(time.RFC1123, string(token))

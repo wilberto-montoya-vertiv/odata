@@ -34,7 +34,7 @@ func parseStringArray(value *string) ([]string, error) {
 	return result, nil
 }
 
-func parseOrderArray(value *string) ([]OrderItem, error) {
+func ParseOrderArray(value *string) ([]OrderItem, error) {
 	parsedArray, err := parseStringArray(value)
 	if err != nil {
 		return nil, err
