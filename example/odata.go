@@ -11,7 +11,7 @@ import (
 	"net/url"
 
 	"github.com/globalsign/mgo"
-	odata "github.com/intel/rsp-sw-toolkit-im-suite-go-odata/mongo"
+	odata "github.com/wilberto-montoya-vertiv/odata"
 )
 
 func example() {

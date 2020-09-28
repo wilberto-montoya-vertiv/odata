@@ -14,7 +14,7 @@ import (
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"github.com/intel/rsp-sw-toolkit-im-suite-go-odata/parser"
+	"github.com/wilberto-montoya-vertiv/odata"
 	"github.com/pkg/errors"
 )
 
