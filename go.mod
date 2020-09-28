@@ -1,4 +1,4 @@
-module github.com/intel/rsp-sw-toolkit-im-suite-go-odata
+module github.com/wilberto-montoya-vertiv/odata
 
 go 1.12
 
